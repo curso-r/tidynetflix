@@ -1,0 +1,24 @@
+Package: tidynetflix
+Title: Ferramentas Para Analise Do Tidytuesday
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "Beatriz",
+           family = "Milz",
+           role = c("aut"),
+           email = "milz.bea@gmail.com"),
+    person(given = "Caio",
+           family = "Lente",
+           role = c("aut", "cre"),
+           email = "clente@curso-r.com"),
+    person(given = "Julio",
+           family = "Trecenti",
+           role = c("aut"),
+           email = "jtrecenti@curso-r.com")
+    )
+Description: Algumas funcoes utilizadas pela Curso-R para analisar os dados da
+  tidytuesday de 20/04/2021.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1

@@ -1,0 +1,12 @@
+{
+  "articles": [
+    {
+      "path": "index.html",
+      "title": "Tidy-Curso-R",
+      "author": [],
+      "contents": "\n\n\n\n",
+      "last_modified": "2021-04-21T21:58:26-03:00"
+    }
+  ],
+  "collections": ["posts/posts.json"]
+}

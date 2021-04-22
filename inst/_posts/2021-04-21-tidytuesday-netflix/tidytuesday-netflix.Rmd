@@ -1,0 +1,242 @@
+---
+title: "Tidytuesday Netflix"
+description: |
+  Post do Tidytuesday do dia 20/04/2021.
+author:
+  - name: Beatriz Milz
+    url: https://beatrizmilz.com/
+    affiliation: PROCAM/IEE/USP
+    orcid_id: 0000-0002-3064-4486
+  - name: Caio Lente
+    affiliation: Curso-R
+    url: https://curso-r.com
+  - name: Julio Trecenti
+    url: https://curso-r.com
+    affiliation: Curso-R
+    orcid_id: 0000-0002-1680-6389
+date: 2021-04-21
+output:
+  distill::distill_article:
+    self_contained: false
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+```{r}
+# Carregar pacotes
+library(magrittr, include.only = "%>%")
+```
+
+```{r}
+# Importar a base
+netflix <- tidynetflix::atualizar_dados(file = NULL)
+```
+
+```{r include=FALSE}
+# Olhar a base
+
+dplyr::glimpse(netflix)
+```
+```{r}
+# Limpeza de dados
+netflix_clean <- netflix %>%
+  # Transformar em data: date_added
+  dplyr::mutate(date_added = readr::parse_date(date_added, format = "%B %d, %Y"))  %>%
+  # Separar a coluna listed_in - 3 categorias
+  tidyr::separate(
+    listed_in,
+    sep = ",",
+    into =  paste0("listed_in_", rep(1:3)),
+    fill = "right"
+  ) %>%
+  # Transformar em número: duration. Separei em 2 variáveis:
+  # duration_seasons para séries
+  # duration_minutes para filmes
+  dplyr::mutate(
+    duration_seasons = dplyr::case_when(type == "TV Show" ~ readr::parse_number(duration)),
+    duration_minutes = dplyr::case_when(type == "Movie" ~ readr::parse_number(duration))
+  ) %>%
+  # Altera a ordem da base, deixa todos os duration juntos
+  dplyr::relocate(duration_seasons, duration_minutes, .after = duration) %>%
+  # Remove espaços desnecessários criados ao separar o conteúdo de listed_in
+  dplyr::mutate(dplyr::across(tidyselect::starts_with("listed_in_"), stringr::str_trim))
+```
+
+## Filme ou série? O que tem mais no catálogo?
+
+```{r}
+netflix_clean %>%
+  # dplyr::group_by(type) %>%
+  ggplot2::ggplot() +
+  ggplot2::geom_bar(ggplot2::aes(x = type), fill = "#e50815", alpha = 0.8) +
+  ggplot2::theme_bw() +
+  ggplot2::labs(x = "Tipo", y = "Quantidade de itens")
+```
+
+
+- O catálogo da netflix tem muito mais filmes do que séries!
+
+
+## Quantas temporadas as séries costumam durar? 
+
+```{r}
+netflix_clean %>%
+  dplyr::filter(type == "TV Show") %>%
+  ggplot2::ggplot() +
+  ggplot2::geom_bar(ggplot2::aes(x = duration_seasons), fill = "#e50815", alpha = 0.8) +
+  ggplot2::theme_bw() +
+  ggplot2::labs(x = "Número de temporadas", y = "Quantidade de séries") +
+  ggplot2::scale_x_continuous(breaks = 1:15)
+```
+
+
+
+- A maioria das séries da netflix tem 1 temporada.
+
+- 75% das séries possui até 2 temporadas.
+
+- a série mais longa é Grays Anatomy, com 16 temporadas!
+
+## Quanto tempo os filmes costumam durar? -----
+
+```{r}
+netflix_clean %>%
+  dplyr::filter(type == "Movie") %>%
+  ggplot2::ggplot() +
+  ggplot2::geom_density(
+    ggplot2::aes(x = duration_minutes),
+    fill = "#e50815",
+    alpha = 0.8,
+    bins = 100
+  ) +
+  ggplot2::theme_bw() +
+  ggplot2::labs(x = "Minutos", y = "Quantidade de Filmes") +
+  ggplot2::scale_x_continuous(breaks = seq(from = 0, to = 360, by = 30))
+```
+
+
+
+- A maioria dos filmes tem entre ~1h20 e 2h
+
+- o "filme" mais longo é na verdade um episódio de série: Black Mirror: Bandersnatch
+
+
+## Em qual ano o conteúdo foi produzido? 
+
+```{r}
+netflix_clean %>%
+  dplyr::count(release_year) %>%
+  ggplot2::ggplot() +
+  ggplot2::geom_col(ggplot2::aes(x = release_year, y = n), fill = "#e50815",
+           alpha = 0.8) +
+  ggplot2::theme_bw() +
+  ggplot2::labs(x = "Ano de lançamento", y = "Quantidade de Filmes/Séries")
+```
+
+
+- Os anos em que foi lançado a maioria dos itens da Netflix são entre 2016 e 2020. O catálogo é bem atual!
+
+## Em qual ano o item foi adicionado no catálogo?  
+
+
+  
+```{r}
+netflix_clean %>%
+  dplyr::mutate(mes_ano = lubridate::floor_date(date_added, unit = "year")) %>%
+  dplyr::count(mes_ano) %>%
+  ggplot2::ggplot() +
+  ggplot2::geom_col(ggplot2::aes(x = mes_ano, y = n), fill = "#e50815",
+           alpha = 0.8) +
+  ggplot2::theme_bw() +
+  ggplot2::labs(x = "Ano de adição ao catálogo", y = "Quantidade de Filmes/Séries") +
+  ggplot2::scale_x_date(breaks = "2 years", date_labels = "%Y")
+```
+
+
+- A netflix começou a adicionar itens no catálogo em 2008!
+
+- O ano em que a netflix mais adicionou conteúdo foi 2019.
+
+
+
+## Quais são as categorias em que a Netflix mais investe? 
+
+```{r}
+
+netflix_clean %>%
+  tidyr::pivot_longer(
+    cols = c("listed_in_1", "listed_in_2", "listed_in_3"),
+    values_to = "listed_in"
+  ) %>%
+  dplyr::mutate(
+    listed_in = stringr::str_replace_all(listed_in, "TV Shows|Movies|TV|'", ""),
+    listed_in = stringr::str_trim(listed_in),
+    listed_in = dplyr::case_when(
+      listed_in %in% c("Anime Features",  "Anime Series") ~ "Anime",
+      listed_in %in% c("Children & Family",  "Kids") ~ "Children & Family | Kids",
+      listed_in %in% c("Stand-Up Comedy",  "Stand-Up Comedy & Talk Shows") ~ "Stand-Up Comedy & Talk Shows",
+      
+      TRUE ~ listed_in
+    )
+  ) %>%
+  dplyr::count(listed_in) %>%
+  tidyr::drop_na(listed_in) %>%
+  dplyr::filter(listed_in != "") %>%
+  dplyr::mutate(
+    listed_in = forcats::fct_lump(listed_in, 10, w = n),
+    listed_in = forcats::fct_reorder(listed_in, n)
+  ) %>%
+  ggplot2::ggplot() +
+  ggplot2::geom_col(ggplot2::aes(y = listed_in, x = n), fill = "#e50815", alpha = 0.8) +
+  ggplot2::theme_bw() +
+  ggplot2::labs(y = "Categoria", x = "Quantidade de ocorrência")
+```
+
+
+- Netflix investe bastante no catálogo internacional
+
+- Principais categorias (fora internacional): Dramas, comédias, infantil
+
+
+# Quais são os principais países em que são produzidos conteúdos?
+
+```{r}
+netflix_clean %>%
+  # Separar a coluna country
+  tidyr::separate(
+    country,
+    sep = ",",
+    into =  paste0("country_", rep(1:15)),
+    fill = "right",
+    remove = FALSE
+  ) %>%
+  dplyr::mutate(dplyr::across(tidyselect::starts_with("country_"), stringr::str_trim)) %>%
+  tidyr::pivot_longer(
+    cols = tidyselect::starts_with("country_"),
+    values_drop_na = TRUE,
+    names_to = "order_country",
+    values_to = "countries"
+  ) %>%
+  dplyr::count(countries) %>% 
+dplyr::mutate(
+  countries = forcats::fct_lump(countries, 10, w = n),
+  countries = forcats::fct_reorder(countries, n)
+) %>%
+  ggplot2::ggplot() +
+  ggplot2::geom_col(ggplot2::aes(y = countries, x = n), fill = "#e50815", alpha = 0.8) +
+  ggplot2::theme_bw() +
+  ggplot2::labs(y = "País", x = "Quantidade de ocorrência")
+```
+
+
+
+- O principal (de muito longe) país que produz conteúdos pra netflix é os EUA, seguido pela India (com muita diferença).
+
+- Brasil não está no TOP 10!

@@ -4,3 +4,8 @@
 ^data-raw$
 ^\.github$
 ^README\.Rmd$
+^docs$
+^inst/_site\.yml$
+^inst/index\.Rmd$
+^inst/inst\.Rproj$
+^inst/_posts$

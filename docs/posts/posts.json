@@ -1,0 +1,27 @@
+[
+  {
+    "path": "posts/2021-04-21-tidytuesday-netflix/",
+    "title": "Tidytuesday Netflix",
+    "description": "Post do Tidytuesday do dia 20/04/2021.",
+    "author": [
+      {
+        "name": "Beatriz Milz",
+        "url": "https://beatrizmilz.com/"
+      },
+      {
+        "name": "Caio Lente",
+        "url": "https://curso-r.com"
+      },
+      {
+        "name": "Julio Trecenti",
+        "url": "https://curso-r.com"
+      }
+    ],
+    "date": "2021-04-21",
+    "categories": [],
+    "contents": "\n\n\n\n\n\n\n\n\n\nFilme ou série? O que tem mais no catálogo?\n\n\n\nO catálogo da netflix tem muito mais filmes do que séries!\nQuantas temporadas as séries costumam durar?\n\n\n\nA maioria das séries da netflix tem 1 temporada.\n75% das séries possui até 2 temporadas.\na série mais longa é Grays Anatomy, com 16 temporadas!\nQuanto tempo os filmes costumam durar? —–\n\n\n\nA maioria dos filmes tem entre ~1h20 e 2h\no “filme” mais longo é na verdade um episódio de série: Black Mirror: Bandersnatch\nEm qual ano o conteúdo foi produzido?\n\n\n\nOs anos em que foi lançado a maioria dos itens da Netflix são entre 2016 e 2020. O catálogo é bem atual!\nEm qual ano o item foi adicionado no catálogo?\n\n\n\nA netflix começou a adicionar itens no catálogo em 2008!\nO ano em que a netflix mais adicionou conteúdo foi 2019.\nQuais são as categorias em que a Netflix mais investe?\n\n\n\nNetflix investe bastante no catálogo internacional\nPrincipais categorias (fora internacional): Dramas, comédias, infantil\nQuais são os principais países em que são produzidos conteúdos?\n\n\n\nO principal (de muito longe) país que produz conteúdos pra netflix é os EUA, seguido pela India (com muita diferença).\nBrasil não está no TOP 10!\n\n\n\n",
+    "preview": "posts/2021-04-21-tidytuesday-netflix/tidytuesday-netflix_files/figure-html5/unnamed-chunk-5-1.png",
+    "last_modified": "2021-04-21T21:49:54-03:00",
+    "input_file": {}
+  }
+]
